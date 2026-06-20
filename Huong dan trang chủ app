@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hướng dẫn sử dụng HSK MAX — Step by step</title>
+<style>
+  :root{
+    --navy:#10245c;
+    --page-bg:#eef1f7;
+    --card-bg:#ffffff;
+    --text-dark:#1c2433;
+    --text-muted:#7b8494;
+    --red:#e63946;
+    --blue:#2f5fd1;
+    --green:#10b981;
+    --orange:#f59e0b;
+    --purple:#8b5cf6;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:#f5f6fa;
+    font-family:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--text-dark);
+  }
+  .wrap{max-width:480px;margin:0 auto;background:#f5f6fa;}
+
+  .page-head{padding:22px 18px 4px;text-align:center;}
+  .page-head h1{font-size:18px;margin:0 0 6px;color:var(--navy);line-height:1.35;}
+  .page-head p{font-size:12.5px;color:var(--text-muted);margin:0;}
+
+  .quicknav{
+    position:sticky;top:0;z-index:50;
+    background:#fff;
+    display:flex;gap:7px;
+    overflow-x:auto;
+    padding:10px 16px;
+    border-bottom:1px solid #ececf3;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .quicknav::-webkit-scrollbar{display:none;}
+  .quicknav a{
+    flex:0 0 auto;width:28px;height:28px;border-radius:50%;
+    background:var(--page-bg);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    font-size:12.5px;font-weight:800;text-decoration:none;
+  }
+  .quicknav a.cur{background:var(--blue);color:#fff;}
+
+  .steps{padding:20px 16px 50px;}
+  .step{margin-bottom:30px;scroll-margin-top:56px;display:none;}
+  .step.active{display:block;animation:stepin .25s ease;}
+  @keyframes stepin{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .step-meta{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .step-num-badge{
+    width:28px;height:28px;border-radius:50%;
+    background:var(--navy);color:#fff;font-weight:800;font-size:13px;
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+  }
+  .step-meta h3{margin:0;font-size:15px;color:var(--navy);}
+
+  .nav-buttons{display:flex;gap:10px;margin-top:16px;}
+  .nav-btn{
+    flex:1;border:none;border-radius:12px;padding:13px 10px;
+    font-size:13.5px;font-weight:700;font-family:inherit;cursor:pointer;
+  }
+  .nav-btn.prev{background:var(--page-bg);color:var(--navy);}
+  .nav-btn.next{background:var(--blue);color:#fff;}
+  .nav-btn:disabled{opacity:.35;cursor:not-allowed;}
+
+  .visual-frame{position:relative;}
+  .visual-frame.chip{
+    position:relative;
+    background:var(--page-bg);
+    border-radius:18px;
+    padding:26px 16px;
+    display:flex;justify-content:center;align-items:center;
+  }
+
+  .connector{width:2px;height:16px;background:var(--red);margin:0 auto;}
+
+  .caption{
+    position:relative;
+    background:#fff;border:1px solid #eceff5;border-radius:12px;
+    padding:12px 14px;font-size:13.5px;line-height:1.55;color:#2b3344;
+    box-shadow:0 2px 10px rgba(20,30,60,.05);
+  }
+  .caption::before{
+    content:'';position:absolute;top:-7px;left:50%;
+    width:13px;height:13px;background:#fff;
+    border-left:1px solid #eceff5;border-top:1px solid #eceff5;
+    transform:translateX(-50%) rotate(45deg);
+  }
+  .caption b{color:var(--navy);}
+
+  /* highlight ring */
+  .hl{position:relative;outline:2.5px solid var(--red);outline-offset:3px;}
+  .pin{
+    position:absolute;top:-10px;left:-10px;
+    width:20px;height:20px;border-radius:50%;
+    background:var(--red);color:#fff;font-size:11px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+    border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.25);
+    z-index:5;animation:pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.16);}}
+
+  /* ---- reused UI components ---- */
+  .status-toolbar{background:var(--navy);padding:10px 14px 12px;border-radius:18px;}
+  .status-row{display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:12px;font-weight:600;margin-bottom:10px;}
+  .status-icons{display:flex;gap:5px;align-items:center;font-size:11.5px;}
+  .toolbar-row{position:relative;display:flex;align-items:center;gap:7px;}
+  .toolbar-row.hl{background:rgba(255,255,255,.06);border-radius:14px;padding:6px 6px;}
+  .menu-ic{color:#fff;font-size:18px;line-height:1;}
+  .search-pill{flex:1;background:#fff;border-radius:20px;padding:8px 8px 8px 12px;display:flex;align-items:center;justify-content:space-between;gap:6px;color:#9aa3b5;font-size:12.5px;min-width:0;}
+  .search-left{display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;}
+  .search-icons{display:flex;align-items:center;gap:7px;flex:0 0 auto;}
+  .tb-ic{color:#9aa3b5;font-size:13.5px;}
+  .chat-circle{width:27px;height:27px;border-radius:50%;border:1.4px solid #fff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;margin-left:2px;flex:0 0 auto;}
+
+  .banner-welcome{position:relative;background:linear-gradient(135deg,#0c1c4a,#1d3f9b);border-radius:18px;padding:16px;display:flex;align-items:center;gap:12px;}
+  .panda-av{width:42px;height:42px;border-radius:50%;background:#0e2050;border:2px solid #3b5fc9;display:flex;align-items:center;justify-content:center;font-size:20px;flex:0 0 auto;}
+  .welcome-text{flex:1;color:#fff;}
+  .welcome-text .hi{font-size:11.5px;opacity:.85;}
+  .welcome-text .app{font-size:15px;font-weight:800;margin-top:1px;}
+  .btn-continue{position:relative;background:#fff;color:#15306f;font-size:11.5px;font-weight:700;border-radius:20px;padding:8px 14px;white-space:nowrap;}
+
+  .banner-promo{position:relative;background:linear-gradient(135deg,#0c6b46,#19af72);border-radius:18px;padding:16px 16px 14px;color:#fff;min-height:140px;}
+  .cal-badge{position:absolute;top:14px;left:14px;width:30px;background:#fff;border-radius:6px;overflow:hidden;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.15);}
+  .cal-badge .top{background:#e63946;color:#fff;font-size:7.5px;font-weight:700;padding:1px 0;}
+  .cal-badge .num{color:#16407a;font-size:13px;font-weight:800;padding:1px 0;}
+  .promo-title{font-weight:800;font-size:18px;margin:46px 0 6px;letter-spacing:.3px;}
+  .promo-sub{font-size:12px;opacity:.92;margin-bottom:12px;max-width:75%;}
+  .btn-cal{display:inline-block;background:#fff;color:#0c6b46;font-size:11.5px;font-weight:700;border-radius:20px;padding:7px 13px;}
+  .promo-deco{position:absolute;top:14px;right:14px;text-align:center;opacity:.85;}
+  .promo-deco .ic{font-size:22px;}
+  .promo-deco .tag{font-size:7px;font-weight:700;background:rgba(255,255,255,.18);border-radius:6px;padding:1px 4px;margin-top:2px;}
+  .promo-page{position:absolute;bottom:10px;right:14px;font-size:11px;opacity:.85;}
+
+  .carousel-dots{position:relative;display:flex;justify-content:center;gap:5px;}
+  .carousel-dots.hl{padding:6px 12px;border-radius:10px;}
+  .cdot{width:6px;height:6px;border-radius:3px;background:#c7cede;}
+  .cdot.active{width:18px;background:var(--blue);}
+
+  .card{position:relative;background:var(--card-bg);border-radius:18px;padding:16px;box-shadow:0 2px 12px rgba(20,30,60,.05);}
+  .card-header{display:flex;align-items:center;gap:7px;font-weight:800;font-size:12.5px;letter-spacing:.4px;color:#16407a;padding-bottom:10px;border-bottom:1px solid #eef0f5;margin-bottom:14px;}
+
+  .achv-row{display:flex;justify-content:space-between;}
+  .achv-item{display:flex;flex-direction:column;align-items:center;width:56px;}
+  .achv-item .ic{font-size:22px;}
+  .achv-item .cnt{font-size:12.5px;font-weight:800;margin-top:2px;}
+  .achv-item .bar{width:38px;height:4px;border-radius:3px;background:#e7eaf2;margin-top:6px;overflow:hidden;}
+  .achv-item .bar i{display:block;height:100%;background:var(--blue);}
+  .achv-item .frac{font-size:9px;color:var(--text-muted);margin-top:3px;}
+  .achv-item.dim{opacity:.4;}
+  .scrollbar-mini{width:80%;height:4px;background:#e7eaf2;border-radius:3px;margin:14px auto 0;overflow:hidden;}
+  .scrollbar-mini i{display:block;width:28%;height:100%;background:#c7cede;}
+
+  .feat-grid,.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .feat-box{display:flex;gap:9px;background:#fff;border:1px solid #f0f1f6;border-radius:14px;padding:11px 10px;border-left:4px solid var(--blue);}
+  .feat-box .ic-sq{flex:0 0 auto;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;background:#eaf0ff;color:var(--blue);}
+  .feat-box .ttl{font-size:12px;font-weight:800;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+  .feat-box .tag{font-size:7.5px;font-weight:800;color:#fff;border-radius:5px;padding:1px 4px;}
+  .feat-box .desc{font-size:10px;color:var(--text-muted);margin-top:3px;line-height:1.3;}
+  .feat-box.b-green{border-left-color:var(--green);}
+  .feat-box.b-green .ic-sq{background:#e6f9f1;color:var(--green);}
+  .feat-box.b-orange{border-left-color:var(--orange);}
+  .feat-box.b-orange .ic-sq{background:#fef3e2;color:var(--orange);}
+  .feat-box.b-purple{border-left-color:var(--purple);}
+  .feat-box.b-purple .ic-sq{background:#f1ecfe;color:var(--purple);}
+  .feat-box.b-red{border-left-color:var(--red);}
+  .feat-box.b-red .ic-sq{background:#fdecee;color:var(--red);}
+  .tag-hot{background:var(--red);}
+  .tag-new{background:var(--green);}
+  .tag-pro{background:var(--purple);}
+
+  .fab{width:46px;height:46px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:0 8px 18px rgba(47,95,209,.4);}
+
+  .bottom-nav{position:relative;background:var(--navy);display:flex;justify-content:space-around;padding:9px 4px 12px;border-radius:18px;}
+  .nav-item{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;color:#7e90c0;font-size:9px;}
+  .nav-item.hl{background:rgba(255,255,255,.08);border-radius:10px;padding:4px 8px;}
+  .nav-item .ic{font-size:16px;}
+  .nav-item.active{color:#9fc1ff;}
+  .nav-item.active .ic{color:#fff;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="page-head">
+    <h1>Hướng dẫn sử dụng HSK MAX <br>cho người mới bắt đầu</h1>
+    <p>9 bước · chạm số bên dưới để nhảy nhanh đến từng khu vực</p>
+  </div>
+
+  <nav class="quicknav">
+    <a href="#step-1">1</a><a href="#step-2">2</a><a href="#step-3">3</a>
+    <a href="#step-4">4</a><a href="#step-5">5</a><a href="#step-6">6</a>
+    <a href="#step-7">7</a><a href="#step-8">8</a><a href="#step-9">9</a>
+  </nav>
+
+  <div class="steps">
+
+    <!-- STEP 1 -->
+    <section class="step" id="step-1">
+      <div class="step-meta"><span class="step-num-badge">1</span><h3>Thanh công cụ trên cùng</h3></div>
+      <div class="visual-frame">
+        <div class="status-toolbar">
+          <div class="status-row"><span>15:04</span><span class="status-icons">⤢ 📶 ▮▮▮ 66</span></div>
+          <div class="toolbar-row hl">
+            <span class="pin">1</span>
+            <span class="menu-ic">☰</span>
+            <div class="search-pill">
+              <span class="search-left">🔍 Search</span>
+              <span class="search-icons">
+                <span class="tb-ic">🎙️</span><span class="tb-ic">📷</span><span class="tb-ic">✏️</span><span class="tb-ic">🧩</span>
+              </span>
+            </div>
+            <div class="chat-circle">💬</div>
+          </div>
+        </div>
+      </div>
+      <div class="connector"></div>
+      <div class="caption"><b>☰</b> · Mở menu tài khoản (<b>ĐĂNG XUẤT/ĐĂNG NHẬP</b>), cài đặt thông báo, chế độ tối, ngôn ngữ... <br> <b>🔍</b> · Tra từ, dịch câu bằng nhập tay, gõ phím. <br><b>🎙️</b> · Tra từ, dịch câu bằng <em>giọng nói</em> (không cần gõ!).<br><b>📷</b> · Chụp ảnh phần văn bản tiếng Trung để tra nghĩa, phiên âm và phân tích ngữ pháp.<br> <b>✏️</b> · Viết tay chữ Hán để tra.<br> <b>🧩</b> · Tra cứu theo <b>bộ thủ</b> <br> <b>💬</b> · Hộp thư đến và các thông báo.</div>
+      <div class="nav-buttons">
+        <button class="nav-btn prev" disabled>← Trước</button>
+        <button class="nav-btn next">Tiếp theo →</button>
+      </div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="step" id="step-2">
+      <div class="step-meta"><span class="step-num-badge">2</span><h3>Banner chào mừng</h3></div>
+      <div class="visual-frame">
+        <div class="banner-welcome">
+          <div class="panda-av">🐼</div>
+          <div class="welcome-text"><div class="hi">Chào mừng trở lại 👋</div><div class="app">HSK UHD</div></div>
+          <div class="btn-continue hl"><span class="pin">2</span>▷ Tiếp tục học</div>
+        </div>
+      </div>
+      <div class="connector"></div>
+      <div class="caption">Nhấn <b>“Tiếp tục học”</b> để vào lại đúng bài học gần nhất, không cần tìm lại từ đầu.</div>
+      <div class="nav-buttons">
+        <button class="nav-btn prev">← Trước</button>
+        <button class="nav-btn next">Tiếp theo →</button>
+      </div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="step" id="step-3">
+      <div class="step-meta"><span class="step-num-badge">3</span><h3>Banner thông báo / khai giảng</h3></div>
+      <div class="visual-frame">
+        <div class="banner-promo hl">
+          <span class="pin">3</span>
+          <div class="cal-badge"><div class="top">JUL</div><div class="num">17</div></div>
+          <div class="promo-deco"><div class="ic">🗓️</div><div class="tag">THÁNG MỚI</div></div>
+          <div class="promo-title">LỊCH KHAI GIẢNG</div>
+          <div class="promo-sub">Khai giảng các lớp HSK mới</div>
+          <div class="btn-cal">Xem lịch →</div>
+          <div class="promo-page">1 / 3</div>
+        </div>
+      </div>
+      <div class="connector"></div>
+      <div class="caption">Banner Lịch khai giảng/Tính năng mới/Khuyến mãi. Vuốt ngang để xem các thông báo khác, nhấn <b>“Xem lịch”</b> để xem chi tiết.</div>
+      <div class="nav-buttons">
+        <button class="nav-btn prev">← Trước</button>
+        <button class="nav-btn next">Tiếp theo →</button>
+      </div>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="step" id="step-4">
+      <div class="step-meta"><span class="step-num-badge">4</span><h3>Chấm chỉ vị trí</h3></div>
+      <div class="visual-frame chip">
+        <div class="carousel-dots hl">
+          <span class="pin">4</span>
+          <div class="cdot active"></div><div class="cdot"></div><div class="cdot"></div>
+        </div>
+      </div>
+      <div class="connector"></div>
+      <div class="caption">Cho biết bạn đang xem banner thứ mấy trong tổng số banner quảng cáo ở trên.</div>
+      <div class="nav-buttons">
+        <button class="nav-btn prev">← Trước</button>
+        <button class="nav-btn next">Tiếp theo →</button>
+      </div>
+    </section>
+
+    <!-- STEP 5 -->
+    <section class="step" id="step-5">
+      <div class="step-meta"><span class="step-num-badge">5</span><h3>Khu Thành tích</h3></div>
+      <div class="visual-frame">
+        <div class="card hl">
+          <span class="pin">5</span>
+          <div class="card-header">🏅 THÀNH TÍCH</div>
+          <div class="achv-row">
+            <div class="achv-item"><div class="ic">📖</div><div class="cnt">x16</div><div class="bar"><i style="width:80%;"></i></div><div class="frac">16/20</div></div>
+            <div class="achv-item"><div class="ic">✏️</div><div class="cnt">x5</div><div class="bar"><i style="width:50%;"></i></div><div class="frac">5/10</div></div>
+            <div class="achv-item"><div class="ic">🪶</div><div class="cnt">x4</div><div class="bar"><i style="width:80%;"></i></div><div class="frac">4/5</div></div>
+            <div class="achv-item"><div class="ic">🏆</div><div class="cnt">x16</div><div class="bar"><i style="width:80%;"></i></div><div class="frac">16/20</div></div>
+            <div class="achv-item dim"><div class="ic">🎓</div><div class="frac" style="margin-top:8px;">0/10</div></div>
+          </div>
+          <div class="scrollbar-mini"><i></i></div>
+        </div>
+      </div>
+      <div class="connector"></div>
+      <div class="caption">Mỗi icon là 1 huy hiệu/kỹ năng. Số dưới icon = số lượng đã đạt, thanh xanh = % hoàn thành mục tiêu. Vuốt ngang để xem thêm.</div>
+      <div class="nav-buttons">
+        <button class="nav-btn prev">← Trước</button>
+        <button class="nav-btn next">Tiếp theo →</button>
+      </div>
+    </section>
+
+    <!-- STEP 6 -->
+    <section class="step" id="step-6">
+      <div class="step-meta"><span class="step-num-badge">6</span><h3>Tiện ích luyện tập</h3></div>
+      <div class="visual-frame">
+        <div class="card hl">
+          <span class="pin">6</span>
+          <div class="card-header">⚡ TIỆN ÍCH LUYỆN TẬP</div>
+          <div class="feat-grid">
+            <div class="feat-box">
+              <div class="ic-sq">🎙️</div>
+              <div><div class="ttl">Luyện nói AI <span class="tag tag-hot">HOT</span></div><div class="desc">Giao tiếp thực tế cùng AI</div></div>
+            </div>
+            <div class="feat-box b-green">
+              <div class="ic-sq">🎧</div>
+              <div><div class="ttl">Nghe - Chép <span class="tag tag-new">MỚI</span></div><div class="desc">Shadow &amp; Dictation</div></div>
+            </div>
+            <div class="feat-box b-orange">
+              <div class="ic-sq">📝</div>
+              <div><div class="ttl">Viết văn <span class="tag tag-new">MỚI</span></div><div class="desc">Cố vấn AI chấm bài</div></div>
+            </div>
+            <div class="feat-box b-purple">
+              <div class="ic-sq">👨‍🏫</div>
+              <div><div class="ttl">Giáo viên <span class="tag tag-pro">PRO</span></div><div class="desc">1-on-1 live session</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="connector"></div>
+      <div class="caption"><b>Luyện nói AI</b> · Rèn luyện phản xạ giao tiếp với nhiều chủ đề, nhiều vai trò khác nhau.<br> <b>Nghe-Chép</b> · Nghe rồi chép lại (Dictation). Nghe rồi nhắc lại (Shadowing).<br> <b>Viết văn</b> · Nộp bài, AI chấm điểm và góp ý chi tiết.<br> <b>Giáo viên</b>  · Học 1-1 online với giáo viên qua zoom<br></div>
+      <div class="nav-buttons">
+        <button class="nav-btn prev">← Trước</button>
+        <button class="nav-btn next">Tiếp theo →</button>
+      </div>
+    </section>
+
+    <!-- STEP 7 -->
+    <section class="step" id="step-7">
+      <div class="step-meta"><span class="step-num-badge">7</span><h3>Tài liệu học tập</h3></div>
+      <div class="visual-frame">
+        <div class="card hl">
+          <span class="pin">7</span>
+          <div class="card-header">📚 TÀI LIỆU HỌC TẬP</div>
+          <div class="doc-grid">
+            <div class="feat-box b-red">
+              <div class="ic-sq">🎥</div>
+              <div><div class="ttl">Video</div><div class="desc">Bài giảng sinh động</div></div>
+            </div>
+            <div class="feat-box b-green">
+              <div class="ic-sq">🔊</div>
+              <div><div class="ttl">Audio</div><div class="desc">Sách MP3 luyện nghe</div></div>
+            </div>
+            <div class="feat-box">
+              <div class="ic-sq">🔖</div>
+              <div><div class="ttl">Ngữ pháp</div><div class="desc">Hệ thống ngữ pháp</div></div>
+            </div>
+            <div class="feat-box b-orange">
+              <div class="ic-sq">✅</div>
+              <div><div class="ttl">Bài tập</div><div class="desc">Luyện đề &amp; kiểm tra</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="connector"></div>
+      <div class="caption">Kho học liệu đi kèm:<br> <b>Video</b> · bài giảng theo giáo trình chuẩn HSK, giáo trình Hán ngữ/.<br> <b>Audio</b> · file MP3 giáo trình chuẩn HSK.<br> <b>Ngữ pháp</b> · hệ thống ngữ pháp HSK.<br> <b>Bài tập</b> · Các dạng bài tập trắc nghiệm.</div>
+      <div class="nav-buttons">
+        <button class="nav-btn prev">← Trước</button>
+        <button class="nav-btn next">Tiếp theo →</button>
+      </div>
+    </section>
+
+    <!-- STEP 8 -->
+    <section class="step" id="step-8">
+      <div class="step-meta"><span class="step-num-badge">8</span><h3>Nút chat nổi</h3></div>
+      <div class="visual-frame chip" style="height:96px;">
+        <div class="fab hl" style="position:absolute;right:22px;bottom:18px;">
+          <span class="pin">8</span>💬
+        </div>
+      </div>
+      <div class="connector"></div>
+      <div class="caption">• Nhấn vào để mở khung <b>chat với Admin</b> hoặc <b>trợ lý học tập AI</b><br>• Hỏi đáp nhanh về bài học, lỗi kỹ thuật, hoặc cách dùng tính năng<br>.</div>
+      <div class="nav-buttons">
+        <button class="nav-btn prev">← Trước</button>
+        <button class="nav-btn next">Tiếp theo →</button>
+      </div>
+    </section>
+
+    <!-- STEP 9 -->
+    <section class="step" id="step-9">
+      <div class="step-meta"><span class="step-num-badge">9</span><h3>Thanh điều hướng chính</h3></div>
+      <div class="visual-frame">
+        <div class="bottom-nav">
+          <div class="nav-item active hl">
+            <span class="pin">9</span>
+            <div class="ic">🏠</div><div>Trang chủ</div>
+          </div>
+          <div class="nav-item"><div class="ic">📚</div><div>Từ điển</div></div>
+          <div class="nav-item"><div class="ic">📘</div><div>Khóa học</div></div>
+          <div class="nav-item"><div class="ic">📝</div><div>Đề thi</div></div>
+          <div class="nav-item"><div class="ic">👤</div><div>Tôi</div></div>
+        </div>
+      </div>
+      <div class="connector"></div>
+      <div class="caption"><b>Trang chủ</b> · Màn hình tổng quan bạn đang xem.<br> <b>Từ điển</b> · Học và ôn tập từ vựng HSK1 → HSK9.<br> <b>Khóa học</b> · Tất cả khóa học HSK1 → HSK9.<br> <b>Đề thi</b> · Ngân hàng đề thi thử HSK.<br> <b>Tôi</b> · Tài khoản và hồ sơ.</div>
+      <div class="nav-buttons">
+        <button class="nav-btn prev">← Trước</button>
+        <button class="nav-btn next">Hoàn tất ✓</button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.quicknav a'));
+  var total = steps.length;
+  var current = 1;
+
+  function showStep(n){
+    if(n < 1) n = 1;
+    if(n > total) n = total;
+    current = n;
+    steps.forEach(function(s, i){
+      s.classList.toggle('active', (i+1) === n);
+    });
+    navLinks.forEach(function(a, i){
+      a.classList.toggle('cur', (i+1) === n);
+    });
+    var curLink = navLinks[n-1];
+    if(curLink && curLink.scrollIntoView){
+      curLink.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+    }
+    var stepsWrap = document.querySelector('.steps');
+    if(stepsWrap){
+      var top = stepsWrap.getBoundingClientRect().top + window.scrollY - 60;
+      window.scrollTo({top: top, behavior:'smooth'});
+    }
+    history.replaceState(null, '', '#step-' + n);
+  }
+
+  navLinks.forEach(function(a, i){
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      showStep(i + 1);
+    });
+  });
+
+  steps.forEach(function(step, i){
+    var prevBtn = step.querySelector('.nav-btn.prev');
+    var nextBtn = step.querySelector('.nav-btn.next');
+    if(prevBtn){
+      prevBtn.addEventListener('click', function(){ showStep(current - 1); });
+    }
+    if(nextBtn){
+      nextBtn.addEventListener('click', function(){
+        if(current === total){ showStep(1); } else { showStep(current + 1); }
+      });
+    }
+  });
+
+  var startAt = 1;
+  var hash = window.location.hash;
+  if(hash && /^#step-\d+$/.test(hash)){
+    var n = parseInt(hash.replace('#step-',''), 10);
+    if(n >= 1 && n <= total) startAt = n;
+  }
+  showStep(startAt);
+})();
+</script>
+
+</body>
+</html>
